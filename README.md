@@ -25,7 +25,7 @@ Every facet needs two things:
 
 When a user interacts with a facet (clicking a link, checking a checkbox, typing in a search field), the library builds a new URL, fetches the page at that URL, extracts the updated content, and swaps it in — no full page reload.
 
-```
+```text
 [data-facet="my-results"] ──points to──► [data-filter=""] or .my-results or #my-results
 ```
 
@@ -53,6 +53,8 @@ Defines the behavior of a facet group.
 |---|---|
 | `filter-single` | Single value filter — selecting a new value deselects the previous one |
 | `filter-multiple` | Multi-value filter — values toggle on/off and stack with commas |
+| `control-single` | Acts like `filter-single` but protects its value from being cleared by the `reset` button. Used for layout switchers (e.g., list/grid view). |
+| `control-multiple` | Acts like `filter-multiple` but is **not** cleared by the `reset` button. |
 | `single` | Navigation by URL path (e.g. categories). Not treated as a filter — never reset by the reset button |
 | `search` | Search form |
 | `pagination` | Page navigation links |
@@ -61,6 +63,41 @@ Defines the behavior of a facet group.
 | `more-scroll:N` | Auto load more on scroll up to N times, then becomes a regular button |
 | `reset` | Resets all filters in the same `data-facet` group |
 | `submit` | Collects all filter values and applies them at once instead of on each change |
+
+---
+
+### `data-facet-chips`
+
+Placed on an empty container where you want to display the currently active filters as removable "chips" or tags. The library automatically populates this container with buttons representing active selections. Clicking one of these buttons automatically removes the corresponding filter.
+
+```html
+<!-- The library will inject <button data-facet-name="..." value="...">Label</button> here -->
+<div data-facet-chips></div>
+```
+
+If used alongside Interactive Rendering (`has="collection"`), the library updates the container's `data-b-context` with a JSON array of active filters instead of HTML, letting Builderius natively render the chips.
+
+---
+
+### `data-facet-cookie`
+
+Placed on any facet group to automatically persist the user's selection across page reloads using browser cookies. When the user returns or refreshes the page, the library will seamlessly inject the saved state back into the URL and fetch the correct content.
+
+You can explicitly provide a customized cookie suffix via the attribute value, or leave it empty/true to allow auto-detection based on `data-facet-name` or the filter's internal keys.
+
+```html
+<!-- Explicit cookie name ("facet_layout") -->
+<div data-facet=".results" data-facet-type="control-single" data-facet-cookie="layout">
+  <button type="button" name="grid" value="list">List View</button>
+  <button type="button" name="grid" value="grid">Grid View</button>
+</div>
+
+<!-- Auto-named cookie (inherits "color" from data-facet-name, creates "facet_color") -->
+<div data-facet=".results" data-facet-type="filter-multiple" data-facet-name="color" data-facet-cookie>
+  <input type="checkbox" name="color" value="blue"> Blue
+  <input type="checkbox" name="color" value="red"> Red
+</div>
+```
 
 ---
 
